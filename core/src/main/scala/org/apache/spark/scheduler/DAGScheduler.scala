@@ -370,7 +370,7 @@ private[spark] class DAGScheduler(
    */
   private def checkBarrierStageWithRDDChainPattern(rdd: RDD[_], numTasksInStage: Int): Unit = {
     val predicate: RDD[_] => Boolean = (r =>
-      r.getNumPartitions == numTasksInStage && r.dependencies.filter(_.rdd.isBarrier()).size <= 1)
+      r.getNumPartitions == numTasksInStage && r.dependencies.count(_.rdd.isBarrier()) <= 1)
     if (rdd.isBarrier() && !traverseParentRDDsWithinStage(rdd, predicate)) {
       throw new BarrierJobUnsupportedRDDChainException
     }
